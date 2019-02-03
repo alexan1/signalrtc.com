@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/obj/Debug
+/bin
+/.vs/SignalRTC_client/config
+/.vs/SignalRTC_client/v16/Server/sqlite3
+/.vs/SignalRTC_client/v16
+/SignalRTC_client.csproj.user
