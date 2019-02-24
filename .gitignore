@@ -8,3 +8,4 @@
 /.vs/SignalRTC_client/v16/Server/sqlite3
 /.vs/SignalRTC_client/v16
 /SignalRTC_client.csproj.user
+/packages
