@@ -1,4 +1,4 @@
-﻿var ua = navigator.userAgent.toLowerCase();
+var ua = navigator.userAgent.toLowerCase();
 var isAndroid = ua.indexOf("android") > -1;
 console.log(ua);
 //isAndroid = true;
@@ -140,7 +140,7 @@ $videocam.click(function () {
             audioTracks[0].stop();           
         };
         $videocam.html(camoff);
-        chat.server.activateMedia(0);
+        hub.invoke("ActivateMedia", 0);
         $call.hide();
     }
 });
@@ -158,7 +158,7 @@ $mic.click(function () {
             audioTracks[0].stop();
         };
         $(this).html(micoff);
-        chat.server.activateMedia(0);
+        hub.invoke("ActivateMedia", 0);
         $call.hide();
     }
 });

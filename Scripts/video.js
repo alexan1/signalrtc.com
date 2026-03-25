@@ -6,7 +6,7 @@
         call();
     });
     $hangupButton.click(function () {
-        chat.server.hangUp();
+        hub.invoke("HangUp");
     });       
 
     var startTime;
@@ -92,26 +92,15 @@
         switch (media) {
             case 1:
                 constraints = {
-                    audio: {
-                        optional: [{
-                            sourceId: audioId
-                        }]
-                    },
-                    video: {
-                        optional: [{
-                            sourceId: videoId
-                        }]
-                    }
+                    audio: audioId ? { deviceId: { exact: audioId } } : true,
+                    video: videoId ? { deviceId: { exact: videoId } } : true
                 };
                 $videocam.html(camon);
                 break;
             case 2:
                 constraints = {
-                    video: false, audio: {
-                        optional: [{
-                            sourceId: audioId
-                        }]
-                    }
+                    video: false,
+                    audio: audioId ? { deviceId: { exact: audioId } } : true
                 };
                 $mic.html(micon);
                 break;
@@ -138,7 +127,7 @@
             connection = new RTCPeerConnection(servers);            
             connection.onicecandidate = function (e) {
 
-                chat.server.iceCandidate(JSON.stringify({ "candidate": e.candidate }));
+                hub.invoke("IceCandidate", JSON.stringify({ "candidate": e.candidate }));
             };
             connection.onaddstream = function (e) {
                 // Call the polyfill wrapper to attach the media stream to this element.
@@ -199,7 +188,7 @@ function answer(message) {
         }
             connection.createAnswer(function (desc) {
                 connection.setLocalDescription(desc, function () {
-                    chat.server.answer(JSON.stringify({ "sdp": desc}));
+                    hub.invoke("Answer", JSON.stringify({ "sdp": desc }));
                 }, errorHandler);                
             }, errorHandler);            
     }, errorHandler);    
@@ -232,7 +221,7 @@ function gotStream(stream) {
         media = 2;        
     }
     localStream = stream;   
-    chat.server.activateMedia(media);
+    hub.invoke("ActivateMedia", media);
 }
 
 function onCreateOfferSuccess(desc) {
@@ -248,7 +237,7 @@ function onCreateOfferSuccess(desc) {
         return;
     }
   connection.setLocalDescription(desc, function () {
-      chat.server.offer(conn, JSON.stringify({ "sdp": desc }));
+      hub.invoke("Offer", conn, JSON.stringify({ "sdp": desc }));
     onSetLocalSuccess(connection);
   }, errorHandler);  
 }
@@ -286,9 +275,10 @@ var errorHandler = function (err) {
 
 var errorWebCam = function (err) {
     console.error(err);
-    alert('Sorry, WebCam is absent');    
+    alert('Sorry, camera/microphone is unavailable: ' + err.message);
     $localVideo.hide();
     $videocam.html(camoff);
+    $mic.html(micoff);
     $call.hide();
 };
 
