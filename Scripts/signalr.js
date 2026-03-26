@@ -1,6 +1,4 @@
-// Hub URL — switch for local vs production
-var hubUrl = "http://localhost:5000/signalr";
-//var hubUrl = "https://chatroomone.azurewebsites.net/signalr";
+// hubUrl is defined in Scripts/config.js
 
 var hub;
 
