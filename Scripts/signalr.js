@@ -63,7 +63,20 @@ function userConnect(name) {
                     case 2: med = "Mic"; break;
                     default: med = "Nothing"; break;
                 }
-                $users.append('<input type="radio" value="' + connectionId + '" name="user"><label>' + usersdata[i].name + ' </label>  <label><font color="Green"><small>/' + usersdata[i].browser + '/ </small></font></label><label><font color="Red"><small>  ' + med + '</small></font><br/></label><br/>');
+                var $radio = $('<input type="radio" name="user">').val(connectionId);
+                var $nameLabel = $('<label></label>').text(usersdata[i].name + ' ');
+                var $browserLabel = $('<label></label>').append(
+                    $('<font color="Green"></font>').append(
+                        $('<small></small>').text('/' + usersdata[i].browser + '/ ')
+                    )
+                );
+                var $mediaLabel = $('<label></label>').append(
+                    $('<font color="Red"></font>').append(
+                        $('<small></small>').text('  ' + med)
+                    ),
+                    $('<br/>')
+                );
+                $users.append($radio, $nameLabel, '  ', $browserLabel, $mediaLabel, $('<br/>'));
             }
             $('input[name="user"][value="public"]').prop('checked', true);
         } else {
