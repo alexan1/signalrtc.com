@@ -47,15 +47,15 @@ function userConnect(name) {
     hub.on("showUsersOnLine", function (users) {
         var usersdata1 = JSON.parse(users);
         console.log("my name = " + $displayname.val());
-        var usersdata = usersdata1.filter(function (el) { return el.Name != $displayname.val(); });
+        var usersdata = usersdata1.filter(function (el) { return el.name != $displayname.val(); });
         if (usersdata[0] != null) {
             var audio = new Audio('/sound/bottle-open-1.mp3');
             audio.play();
             $users.empty();
             $users.append('<input type="radio" value="public" name="user" checked><label>Public</label><br />');
             for (var i = 0; i < usersdata.length; i++) {
-                var connectionId = usersdata[i].ConnectionId;
-                var media = usersdata[i].BroMedia;
+                var connectionId = usersdata[i].connectionId;
+                var media = usersdata[i].broMedia;
                 var med = " ";
                 switch (media) {
                     case 0: med = " "; break;
@@ -63,7 +63,7 @@ function userConnect(name) {
                     case 2: med = "Mic"; break;
                     default: med = "Nothing"; break;
                 }
-                $users.append('<input type="radio" value="' + connectionId + '" name="user"><label>' + usersdata[i].Name + ' </label>  <label><font color="Green"><small>/' + usersdata[i].Browser + '/ </small></font></label><label><font color="Red"><small>  ' + med + '</small></font><br/></label><br/>');
+                $users.append('<input type="radio" value="' + connectionId + '" name="user"><label>' + usersdata[i].name + ' </label>  <label><font color="Green"><small>/' + usersdata[i].browser + '/ </small></font></label><label><font color="Red"><small>  ' + med + '</small></font><br/></label><br/>');
             }
             $('input[name="user"][value="public"]').prop('checked', true);
         } else {
@@ -87,7 +87,7 @@ function startHub() {
             var conn = $('input[name="user"]:checked').val();
             var conname = $('input[name="user"]:checked').next().text().split(' ')[0];
             console.trace('conn = ' + conn + '/' + conname);
-            if (conn == "public") {
+            if (!conn || conn == "public") {
                 hub.invoke("Send", $displayname.val(), $message.val());
             } else {
                 hub.invoke("SendToUser", conname, conn, $displayname.val(), $message.val());
