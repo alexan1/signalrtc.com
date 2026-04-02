@@ -4,6 +4,7 @@
 
 /obj/Debug
 /bin
+/.vs/
 /.vs/SignalRTC_client/config
 /.vs/SignalRTC_client/v16/Server/sqlite3
 /.vs/SignalRTC_client/v16
