@@ -22,12 +22,12 @@ function getUserName() {
 
 function userConnect(name) {
     console.trace('user = ' + name);
-    console.trace('browser = ' + webrtcDetectedBrowser);
+    console.trace('browser = ' + adapter.browserDetails.browser);
     $displayname.val(name);
     $message.focus();
 
     hub = new signalR.HubConnectionBuilder()
-        .withUrl(hubUrl + "?userName=" + encodeURIComponent(name) + "&browser=" + encodeURIComponent(webrtcDetectedBrowser))
+        .withUrl(hubUrl + "?userName=" + encodeURIComponent(name) + "&browser=" + encodeURIComponent(adapter.browserDetails.browser))
         .withAutomaticReconnect()
         .build();
 
