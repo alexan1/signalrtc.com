@@ -41,7 +41,13 @@
 
 
         <div id="video" class="panel panel-default" hidden>
-            <video id="remoteVideo" autoplay width="640" height="480" controls></video>
+            <div style="position:relative;display:inline-block;">
+                <video id="remoteVideo" autoplay width="640" height="480" controls></video>
+                <button id="enableAudioBtn" onclick="document.getElementById('remoteVideo').play();this.style.display='none';"
+                    style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2em;padding:10px 20px;cursor:pointer;">
+                    🔊 Click to enable audio
+                </button>
+            </div>
             <video id="localVideo" autoplay muted title="Local video" width="320" height="240"></video>
         </div>
         <br />
