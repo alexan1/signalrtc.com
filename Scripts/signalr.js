@@ -50,7 +50,7 @@ function userConnect(name) {
         var usersdata = usersdata1.filter(function (el) { return el.name != $displayname.val(); });
         if (usersdata[0] != null) {
             var audio = new Audio('/sound/bottle-open-1.mp3');
-            audio.play();
+            audio.play().catch(() => {});
             $users.empty();
             $users.append('<input type="radio" value="public" name="user" checked><label>Public</label><br />');
             for (var i = 0; i < usersdata.length; i++) {
