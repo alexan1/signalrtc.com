@@ -212,7 +212,7 @@ function gotStream(stream) {
     var media = 0;
     if (stream.getVideoTracks().length) {
         $videocam.html(camon);
-        attachMediaStream($("#localVideo")[0], stream);
+        $("#localVideo")[0].srcObject = stream;
         media = 1;
     }
     else {
