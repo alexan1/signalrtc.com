@@ -132,6 +132,7 @@
                 $device.hide();
                 if (remoteVideo.srcObject !== e.streams[0]) {
                     remoteVideo.srcObject = e.streams[0];
+                    remoteVideo.play().catch(err => trace('remoteVideo play failed: ' + err));
                     trace('received remote stream');
                 }
             };
