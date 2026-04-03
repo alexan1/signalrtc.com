@@ -14,10 +14,8 @@
     var connection;
     
     var sdpConstraints = {
-        'mandatory': {
-            'OfferToReceiveAudio': true,
-            'OfferToReceiveVideo': true
-        }
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: true
     };
 
     $localVideo.on('loadedmetadata', function () {
@@ -129,12 +127,13 @@
 
                 hub.invoke("IceCandidate", JSON.stringify({ "candidate": e.candidate }));
             };
-            connection.onaddstream = function (e) {
-                // Call the polyfill wrapper to attach the media stream to this element.
+            connection.ontrack = function (e) {
                 $callButton.prop('disabled', true);
                 $device.hide();
-                attachMediaStream(remoteVideo, e.stream);
-                trace('received remote stream');
+                if (remoteVideo.srcObject !== e.streams[0]) {
+                    remoteVideo.srcObject = e.streams[0];
+                    trace('received remote stream');
+                }
             };
             $call.show();
         }
@@ -169,29 +168,29 @@ function call() {
   } 
 
   if (localStream != null) {
-      connection.addStream(localStream);
+      localStream.getTracks().forEach(track => connection.addTrack(track, localStream));
       trace('Added local stream to connection');
   }
 
   trace('connection createOffer start');
-  connection.createOffer(onCreateOfferSuccess, errorHandler, sdpConstraints);
+  connection.createOffer(sdpConstraints).then(onCreateOfferSuccess).catch(errorHandler);
 }
 
 function answer(message) {    
     $remoteVideo.show();    
     $hangupButton.prop('disabled', false);
     trace('send answer ' + message.sdp);
-    connection.setRemoteDescription(new RTCSessionDescription(message.sdp), function () {       
+    connection.setRemoteDescription(new RTCSessionDescription(message.sdp)).then(function () {       
         trace('setRemoteDescription');
         if (localStream != null) {
-            connection.addStream(localStream);
+            localStream.getTracks().forEach(track => connection.addTrack(track, localStream));
         }
-            connection.createAnswer(function (desc) {
-                connection.setLocalDescription(desc, function () {
+            connection.createAnswer().then(function (desc) {
+                connection.setLocalDescription(desc).then(function () {
                     hub.invoke("Answer", JSON.stringify({ "sdp": desc }));
-                }, errorHandler);                
-            }, errorHandler);            
-    }, errorHandler);    
+                }).catch(errorHandler);
+            }).catch(errorHandler);
+    }).catch(errorHandler);    
 }
 
 function addIceCandidate(message) {
@@ -236,10 +235,10 @@ function onCreateOfferSuccess(desc) {
         hangup();
         return;
     }
-  connection.setLocalDescription(desc, function () {
+  connection.setLocalDescription(desc).then(function () {
       hub.invoke("Offer", conn, JSON.stringify({ "sdp": desc }));
-    onSetLocalSuccess(connection);
-  }, errorHandler);  
+      onSetLocalSuccess(connection);
+  }).catch(errorHandler);  
 }
 
 function onSetLocalSuccess(connection) {
