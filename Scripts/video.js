@@ -128,12 +128,10 @@
                 hub.invoke("IceCandidate", JSON.stringify({ "candidate": e.candidate }));
             };
             connection.ontrack = function (e) {
-                trace('ontrack fired: kind=' + e.track.kind + ' enabled=' + e.track.enabled + ' muted=' + e.track.muted + ' streams=' + e.streams.length);
                 $callButton.prop('disabled', true);
                 $device.hide();
                 if (remoteVideo.srcObject !== e.streams[0]) {
                     remoteVideo.srcObject = e.streams[0];
-                    trace('remoteVideo srcObject set, audioTracks=' + e.streams[0].getAudioTracks().length + ' videoTracks=' + e.streams[0].getVideoTracks().length);
                     remoteVideo.play().catch(err => {
                         trace('remoteVideo play failed: ' + err);
                         if (err.name === 'NotAllowedError') {
@@ -176,10 +174,7 @@ function call() {
   } 
 
   if (localStream != null) {
-      localStream.getTracks().forEach(track => {
-          connection.addTrack(track, localStream);
-          trace('addTrack: kind=' + track.kind + ' enabled=' + track.enabled + ' label=' + track.label);
-      });
+      localStream.getTracks().forEach(track => connection.addTrack(track, localStream));
       trace('Added local stream to connection');
   }
 
