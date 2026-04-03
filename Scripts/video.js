@@ -132,7 +132,12 @@
                 $device.hide();
                 if (remoteVideo.srcObject !== e.streams[0]) {
                     remoteVideo.srcObject = e.streams[0];
-                    remoteVideo.play().catch(err => trace('remoteVideo play failed: ' + err));
+                    remoteVideo.play().catch(err => {
+                        trace('remoteVideo play failed: ' + err);
+                        if (err.name === 'NotAllowedError') {
+                            document.getElementById('enableAudioBtn').style.display = 'block';
+                        }
+                    });
                     trace('received remote stream');
                 }
             };
@@ -296,6 +301,7 @@ function hangup() {
   connection.close();  
   connection = null;    
   $remoteVideo.hide();
+  document.getElementById('enableAudioBtn').style.display = 'none';
   $device.show();   
   connect();  
   $hangupButton.prop('disabled', true);  
