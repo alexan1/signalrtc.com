@@ -11,6 +11,9 @@
     <meta name="google-signin-scope" content="profile email">
     <meta name="google-signin-client_id" content="341762296483-qu4ijn2f0t9tnt0ddcnq7h93jf60dle0.apps.googleusercontent.com">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="pics/icon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#d9534f">
     <link rel="canonical" href="https://signalrtc.com/"/>
 
     <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.5/simplex/bootstrap.min.css" rel="stylesheet" integrity="sha256-4nVETqQoIoCwuephcXpJ501G8B5sgBHb1ZsKU/D476I= sha512-cfSmkkLRDAcUNaJxRRWopCyEGX43UkWCAOl2wErYMBGOQVWwOsZ7IFuXScF9H/6nMGbmsgV4m5/xYfesyvHTxw==" crossorigin="anonymous">
@@ -171,6 +174,12 @@
         <script src="Scripts/video.js"></script>
         <script src="Scripts/signalr.js"></script>
         <script src="Scripts/utils.js"></script>
+
+        <script>
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js');
+            }
+        </script>
 
 </body>
 
