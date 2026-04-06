@@ -16,20 +16,19 @@ Web client for [SignalRTC](https://github.com/alexan1/SignalRTC) — a WebRTC vi
 The SignalR hub URL is set in `Scripts/config.js`:
 
 ```js
-var hubUrl = "https://your-server.azurewebsites.net/signalr";
+var hubUrl = "https://signalrtc-hfejcjbsc6acf7fj.canadaeast-01.azurewebsites.net/signalr";
 ```
 
-For local development:
+For local development, change it to `http://localhost:5000/signalr` — but don't commit that change.
 
-```js
-var hubUrl = "http://localhost:5000/signalr";
-```
-
-## Project Structure
+## Key Files
 
 ```
 signalrtc.com/
 ├── index.html            # Main page
+├── videochat.html        # Video chat page
+├── mobile.html           # Mobile landing page
+├── Privacy.html          # Privacy policy
 ├── Scripts/
 │   ├── config.js         # Hub URL configuration
 │   ├── signalr.js        # SignalR connection and messaging
