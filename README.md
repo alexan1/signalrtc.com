@@ -27,7 +27,6 @@ For local development, change it to `http://localhost:5000/signalr` — but don'
 signalrtc.com/
 ├── index.html            # Main page
 ├── videochat.html        # Video chat page
-├── mobile.html           # Mobile landing page
 ├── Privacy.html          # Privacy policy
 ├── Scripts/
 │   ├── config.js         # Hub URL configuration
