@@ -3,44 +3,36 @@ function trace(msg) { console.log(msg); }
 var ua = navigator.userAgent.toLowerCase();
 var isAndroid = ua.indexOf("android") > -1;
 console.log(ua);
-//isAndroid = true;
 console.log("isAndroid = " + isAndroid);
 
-//var android = 'false';
-//android = localStorage.android;
-//var name1 = localStorage.userName;
 var username = localStorage.userName;
 
 if (username != 'undefined' && username != undefined) {
-    //connect(name);
     start2();
-    //$myname.modal('show');
 }
 else {
     if (isAndroid || localStorage.nexttime == 'false') {
         $myname.modal('show');
     } else {
         $myModal.modal('show');
-    };
-};
+    }
+}
 
 function onSignIn(googleUser) {
-    // Useful data for your client-side scripts:
     var profile = googleUser.getBasicProfile();
-    console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+    console.log("ID: " + profile.getId());
     console.log("Name: " + profile.getName());
     console.log("Image URL: " + profile.getImageUrl());
     console.log("Email: " + profile.getEmail());
     localStorage.userName = profile.getName();
 
-    // The ID token you need to pass to your backend:
     var id_token = googleUser.getAuthResponse().id_token;
     console.log("ID Token: " + id_token);
     $start2.click();
-};
+}
 
 function generateQuickGuid() {
-    return Math.random().toString(36).substring(2, 15);       
+    return Math.random().toString(36).substring(2, 15);
 }
 
 function getTime() {
@@ -59,6 +51,45 @@ function getUrlVars() {
     return vars;
 }
 
+function setMediaButtonState($button, isActive, activeHtml, inactiveHtml) {
+    $button
+        .data('active', isActive)
+        .toggleClass('is-active', isActive)
+        .html(isActive ? activeHtml : inactiveHtml);
+}
+
+function setCameraButtonState(isActive) {
+    setMediaButtonState($videocam, isActive, camon, camoff);
+}
+
+function setMicButtonState(isActive) {
+    setMediaButtonState($mic, isActive, micon, micoff);
+}
+
+function syncPresenceSelection() {
+    var $selected = $('input[name="user"]:checked');
+    var selecteduser = $selected.attr('data-name') || '';
+
+    $users.find('.presence-option').removeClass('is-selected');
+    $selected.closest('.presence-option').addClass('is-selected');
+
+    console.trace('selected user = ', selecteduser);
+    $callButton.prop('disabled', !selecteduser);
+}
+
+function stopLocalTracks() {
+    if (localStream == undefined || localStream == null) {
+        return;
+    }
+
+    localStream.getTracks().forEach(function (track) {
+        track.stop();
+    });
+
+    localStream = null;
+    $localVideo.get(0).srcObject = null;
+}
+
 $start1.click(function () {
     if (typeof (Storage) !== "undefined") {
         localStorage.nexttime = true;
@@ -72,31 +103,9 @@ $start1.click(function () {
     $myname.modal('show');
 });
 
-
 $start2.click(function () {
     start2();
-    //if (navigator.getUserMedia) {
-    //    $device.show();
-    //    if (isAndroid)
-    //    {
-    //        $camdev.hide();
-    //        $micdev.hide();
-    //        $mic.hide();
-    //    }
-    //    else
-    //    {
-    //        selectDevice();
-    //    }
-    //}
-    //else {
-    //    $device.hide();
-    //    $alert1.show();
-    //}
-    //$video.hide();   
-    //$call.hide();
-    //starting();
 });
-
 
 function start2() {
     if (navigator.getUserMedia) {
@@ -116,32 +125,28 @@ function start2() {
     }
     $video.hide();
     $call.hide();
+    setCameraButtonState(false);
+    setMicButtonState(false);
     starting();
 }
 
 $user.keypress(function (e) {
-    if (e.which == 13) {//Enter key pressed
+    if (e.which == 13) {
         $start2.click();
     }
 });
 
 $videocam.click(function () {
-    //if ($.connection.hub && $.connection.hub.state === $.signalR.connectionState.disconnected) {
-    //    $.connection.hub.start()
-    //}
-    $video.toggle();    
-    if ($localVideo.is(':visible')) {       
+    $video.toggle();
+    if ($localVideo.is(':visible')) {
+        setMicButtonState(false);
         startDev(1);
         connect();
     }
     else {
-        if (localStream != undefined) {            
-            var videoTracks = localStream.getVideoTracks();
-            videoTracks[0].stop()
-            var audioTracks = localStream.getAudioTracks();
-            audioTracks[0].stop();           
-        };
-        $videocam.html(camoff);
+        stopLocalTracks();
+        setCameraButtonState(false);
+        setMicButtonState(false);
         hub.invoke("ActivateMedia", 0);
         $call.hide();
     }
@@ -149,17 +154,14 @@ $videocam.click(function () {
 
 $mic.click(function () {
     $video.toggle();
-    if ($.trim($(this).html()) === micoff) {
-        $(this).html(micon);
+    if (!$mic.data('active')) {
+        setCameraButtonState(false);
         startDev(2);
         connect();
     }
     else {
-        if (localStream != undefined) {
-            var audioTracks = localStream.getAudioTracks();
-            audioTracks[0].stop();
-        };
-        $(this).html(micoff);
+        stopLocalTracks();
+        setMicButtonState(false);
         hub.invoke("ActivateMedia", 0);
         $call.hide();
     }
@@ -170,15 +172,6 @@ var camon = 'Webcam (<strong><u>ON</u></strong>/OFF)';
 var micoff = 'Only microphone (ON/<strong><u>OFF</u></strong>)';
 var micon = 'Only microphone (<strong><u>ON</u></strong>/OFF)';
 
-$users.on("change", "input[type=radio]", function () {   
-    var selecteduser = "";
-    selecteduser = $('input:radio:checked').next().next().next().text().trim();
-    console.trace('selected user = ', selecteduser);
-    if (!selecteduser || selecteduser == "" || selecteduser == null) {
-        $callButton.prop('disabled', true);
-    }
-    else {
-         $callButton.prop('disabled', false);
-    }
-
-    });
+$users.on("change", "input[type=radio]", function () {
+    syncPresenceSelection();
+});
