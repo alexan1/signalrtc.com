@@ -42,6 +42,9 @@
     };   
 
     function selectDevice() {
+        $camdev.empty();
+        $micdev.empty();
+
         navigator.mediaDevices.enumerateDevices().then(function (devices) {
         var camnumber = 0;
         var micnumber = 0;
@@ -93,14 +96,16 @@
                     audio: audioId ? { deviceId: { exact: audioId } } : true,
                     video: videoId ? { deviceId: { exact: videoId } } : true
                 };
-                $videocam.html(camon);
+                setCameraButtonState(true);
+                setMicButtonState(false);
                 break;
             case 2:
                 constraints = {
                     video: false,
                     audio: audioId ? { deviceId: { exact: audioId } } : true
                 };
-                $mic.html(micon);
+                setCameraButtonState(false);
+                setMicButtonState(true);
                 break;
             default:
                 constraints = { audio: false, video: false };
@@ -217,12 +222,16 @@ function gotStream(stream) {
     trace('Received local stream');
     var media = 0;
     if (stream.getVideoTracks().length) {
-        $videocam.html(camon);
+        setCameraButtonState(true);
+        setMicButtonState(false);
+        $localVideo.show();
         $("#localVideo")[0].srcObject = stream;
         media = 1;
     }
     else {
-        $mic.html(micon);
+        setCameraButtonState(false);
+        setMicButtonState(true);
+        $localVideo.hide();
         media = 2;        
     }
     localStream = stream;   
@@ -282,8 +291,8 @@ var errorWebCam = function (err) {
     console.error(err);
     alert('Sorry, camera/microphone is unavailable: ' + err.message);
     $localVideo.hide();
-    $videocam.html(camoff);
-    $mic.html(micoff);
+    setCameraButtonState(false);
+    setMicButtonState(false);
     $call.hide();
 };
 
@@ -292,7 +301,7 @@ var errorMic = function (err) {
     alert('Sorry, Mic is absent');    
     $video.hide();
     $callButton.prop('disabled', true);
-    $mic.html(micoff);
+    setMicButtonState(false);
     $call.hide();
 };
 

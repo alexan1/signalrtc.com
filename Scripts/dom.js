@@ -22,3 +22,5 @@ var $camdev = $('#camdev');
 var $micdev = $('#micdev');
 var $alert1 = $('#alert1');
 var $nexttime = $('#nexttime');
+var $connectionStatus = $('#connectionStatus');
+var $onlineCount = $('#onlineCount');
