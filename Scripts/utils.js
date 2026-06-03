@@ -59,11 +59,15 @@ function setMediaButtonState($button, isActive, activeHtml, inactiveHtml) {
 }
 
 function setCameraButtonState(isActive) {
-    setMediaButtonState($videocam, isActive, camon, camoff);
+    var activeHtml = camon || 'Webcam (<strong><u>ON</u></strong>/OFF)';
+    var inactiveHtml = camoff || 'Webcam/Audio (ON/<strong><u>OFF</u></strong>)';
+    setMediaButtonState($videocam, isActive, activeHtml, inactiveHtml);
 }
 
 function setMicButtonState(isActive) {
-    setMediaButtonState($mic, isActive, micon, micoff);
+    var activeHtml = micon || 'Only microphone (<strong><u>ON</u></strong>/OFF)';
+    var inactiveHtml = micoff || 'Only microphone (ON/<strong><u>OFF</u></strong>)';
+    setMediaButtonState($mic, isActive, activeHtml, inactiveHtml);
 }
 
 function syncPresenceSelection() {
