@@ -493,6 +493,10 @@ a {
         flex-direction: column;
     }
 
+    .app-grid {
+        display: block;
+    }
+
     .video-stage {
         grid-template-columns: 1fr;
     }
