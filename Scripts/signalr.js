@@ -163,7 +163,7 @@ function userConnect(name) {
             audio.play().catch(function (err) { if (err.name !== 'NotAllowedError') console.error('audio play failed:', err); });
         }
 
-        $callButton.prop('disabled', true);
+        syncPresenceSelection();
     });
 
     hub.onreconnecting(function () {
