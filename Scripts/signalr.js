@@ -2,96 +2,102 @@
 
 var hub;
 
-function starting() {
-    getUserName();
-}
-
-function getUserName() {
-    var name = localStorage.userName;
-    if (!(name) || name == "undefined") {
-        name = $user.val();
-    }
-    name = $.trim(name);
-    if (!(name) || name == null) {
-        name = generateQuickGuid();
-    } else {
-        localStorage.userName = name;
-    }
-    userConnect(name);
-}
-
 function setConnectionStatus(text, state) {
-    if (!$connectionStatus.length) {
+    if (!connectionStatus) {
         return;
     }
 
-    $connectionStatus
-        .text(text)
-        .removeClass('status-badge--connected status-badge--connecting status-badge--disconnected')
-        .addClass('status-badge--' + state);
+    connectionStatus.textContent = text;
+    connectionStatus.classList.remove('status-badge--connected', 'status-badge--connecting', 'status-badge--disconnected');
+    connectionStatus.classList.add('status-badge--' + state);
 }
 
 function updateOnlineCount(count) {
-    if (!$onlineCount.length) {
+    if (!onlineCount) {
         return;
     }
 
     var suffix = count === 1 ? 'peer' : 'peers';
-    $onlineCount.text(count + ' ' + suffix);
+    onlineCount.textContent = count + ' ' + suffix;
 }
 
 function buildPresenceOption(connectionId, name, meta, checked) {
-    var $option = $('<label class="presence-option"></label>');
-    var $radio = $('<input type="radio" name="user">')
-        .val(connectionId)
-        .attr('data-name', name || '');
+    var label = document.createElement('label');
+    label.className = 'presence-option';
+
+    var radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = 'user';
+    radio.value = connectionId;
+    radio.dataset.name = name || '';
 
     if (checked) {
-        $radio.prop('checked', true);
-        $option.addClass('is-selected');
+        radio.checked = true;
+        label.classList.add('is-selected');
     }
 
-    $option.append(
-        $radio,
-        $('<span class="presence-copy"></span>').append(
-            $('<span class="presence-name"></span>').text(name || 'Public chat'),
-            $('<span class="presence-meta"></span>').text(meta)
-        )
-    );
+    var copy = document.createElement('span');
+    copy.className = 'presence-copy';
 
-    return $option;
+    var nameSpan = document.createElement('span');
+    nameSpan.className = 'presence-name';
+    nameSpan.textContent = name || 'Public chat';
+
+    var metaSpan = document.createElement('span');
+    metaSpan.className = 'presence-meta';
+    metaSpan.textContent = meta;
+
+    copy.appendChild(nameSpan);
+    copy.appendChild(metaSpan);
+    label.appendChild(radio);
+    label.appendChild(copy);
+
+    return label;
 }
 
 function appendDiscussionMessage(priv, name, message) {
-    var $messageItem = $('<li class="chat-message"></li>');
-    var $author = $('<span class="chat-message__author"></span>').append(
-        $('<span></span>').text(name)
-    );
-    var $header = $('<div class="chat-message__header"></div>').append(
-        $author,
-        $('<span class="chat-message__timestamp"></span>').text(getTime())
-    );
+    var messageItem = document.createElement('li');
+    messageItem.className = 'chat-message';
+
+    var author = document.createElement('span');
+    author.className = 'chat-message__author';
+
+    var authorName = document.createElement('span');
+    authorName.textContent = name;
+    author.appendChild(authorName);
 
     if (priv) {
-        $messageItem.addClass('chat-message--private');
-        $author.append(
-            $('<span class="chat-message__badge"></span>').text(priv)
-        );
+        messageItem.classList.add('chat-message--private');
+        var badge = document.createElement('span');
+        badge.className = 'chat-message__badge';
+        badge.textContent = priv;
+        author.appendChild(badge);
     }
 
-    $messageItem.append(
-        $header,
-        $('<p class="chat-message__body"></p>').text(message)
-    );
+    var header = document.createElement('div');
+    header.className = 'chat-message__header';
+    header.appendChild(author);
 
-    $discussion.prepend($messageItem);
+    var timestamp = document.createElement('span');
+    timestamp.className = 'chat-message__timestamp';
+    timestamp.textContent = getTime();
+    header.appendChild(timestamp);
+
+    var body = document.createElement('p');
+    body.className = 'chat-message__body';
+    body.textContent = message;
+
+    messageItem.appendChild(header);
+    messageItem.appendChild(body);
+    discussionList.insertBefore(messageItem, discussionList.firstChild);
 }
 
 function renderUsersOnLine(usersdata) {
-    var previousSelection = $('input[name="user"]:checked').val() || 'public';
+    var selected = document.querySelector('input[name="user"]:checked');
+    var previousSelection = selected ? selected.value : 'public';
     var hasPreviousSelection = previousSelection === 'public';
 
-    $users.empty();
+    usersList.textContent = '';
 
     for (var i = 0; i < usersdata.length; i++) {
         if (usersdata[i].connectionId === previousSelection) {
@@ -100,12 +106,13 @@ function renderUsersOnLine(usersdata) {
         }
     }
 
-    $users.append(buildPresenceOption('public', '', 'Send a message to everyone in the room.', hasPreviousSelection && previousSelection === 'public'));
+    usersList.appendChild(buildPresenceOption('public', '', 'Send a message to everyone in the room.', hasPreviousSelection && previousSelection === 'public'));
 
     if (!usersdata.length) {
-        $users.append(
-            $('<div class="presence-empty"></div>').text('No one else is online yet. Public chat stays available while you wait for another person to join.')
-        );
+        var empty = document.createElement('div');
+        empty.className = 'presence-empty';
+        empty.textContent = 'No one else is online yet. Public chat stays available while you wait for another person to join.';
+        usersList.appendChild(empty);
     }
 
     for (var j = 0; j < usersdata.length; j++) {
@@ -121,46 +128,69 @@ function renderUsersOnLine(usersdata) {
                 break;
         }
 
-        var browserLabel = usersdata[j].browser ? usersdata[j].browser + ' \u2022 ' + mediaLabel : mediaLabel;
+        var browserLabel = usersdata[j].browser ? usersdata[j].browser + ' • ' + mediaLabel : mediaLabel;
         var isSelected = hasPreviousSelection && usersdata[j].connectionId === previousSelection;
-        $users.append(buildPresenceOption(usersdata[j].connectionId, usersdata[j].name, browserLabel, isSelected));
+        usersList.appendChild(buildPresenceOption(usersdata[j].connectionId, usersdata[j].name, browserLabel, isSelected));
     }
 
     if (!hasPreviousSelection) {
-        $('input[name="user"][value="public"]').prop('checked', true).closest('.presence-option').addClass('is-selected');
+        var publicRadio = document.querySelector('input[name="user"][value="public"]');
+        if (publicRadio) {
+            publicRadio.checked = true;
+            var publicOption = publicRadio.closest('.presence-option');
+            if (publicOption) {
+                publicOption.classList.add('is-selected');
+            }
+        }
     }
 }
 
 function userConnect(name) {
     console.trace('user = ' + name);
     console.trace('browser = ' + adapter.browserDetails.browser);
-    $displayname.val(name);
-    $message.focus();
+
+    if (displayNameInput) {
+        displayNameInput.value = name;
+    }
+    if (messageInput) {
+        messageInput.focus();
+    }
+
     setConnectionStatus('Connecting...', 'connecting');
 
     hub = new signalR.HubConnectionBuilder()
-        .withUrl(hubUrl + "?userName=" + encodeURIComponent(name) + "&browser=" + encodeURIComponent(adapter.browserDetails.browser))
+        .withUrl(hubUrl + '?userName=' + encodeURIComponent(name) + '&browser=' + encodeURIComponent(adapter.browserDetails.browser))
         .withAutomaticReconnect()
         .build();
 
-    hub.on("broadcastMessage", function (priv, name, message) {
-        appendDiscussionMessage(priv, name, message);
+    hub.on('broadcastMessage', function (priv, senderName, message) {
+        appendDiscussionMessage(priv, senderName, message);
         console.log('message', message);
         var audio = new Audio('/sound/page-flip-01a.mp3');
-        audio.play().catch(function (err) { if (err.name !== 'NotAllowedError') console.error('audio play failed:', err); });
+        audio.play().catch(function (err) {
+            if (err.name !== 'NotAllowedError') {
+                console.error('audio play failed:', err);
+            }
+        });
     });
 
-    hub.on("showUsersOnLine", function (users) {
+    hub.on('showUsersOnLine', function (users) {
         var usersdata1 = JSON.parse(users);
-        console.log("my name = " + $displayname.val());
-        var usersdata = usersdata1.filter(function (el) { return el.name != $displayname.val(); });
+        console.log('my name = ' + (displayNameInput ? displayNameInput.value : ''));
+        var usersdata = usersdata1.filter(function (el) {
+            return el.name != (displayNameInput ? displayNameInput.value : '');
+        });
 
         updateOnlineCount(usersdata.length);
         renderUsersOnLine(usersdata);
 
         if (usersdata.length) {
             var audio = new Audio('/sound/bottle-open-1.mp3');
-            audio.play().catch(function (err) { if (err.name !== 'NotAllowedError') console.error('audio play failed:', err); });
+            audio.play().catch(function (err) {
+                if (err.name !== 'NotAllowedError') {
+                    console.error('audio play failed:', err);
+                }
+            });
         }
 
         syncPresenceSelection();
@@ -174,10 +204,21 @@ function userConnect(name) {
         setConnectionStatus('Connected', 'connected');
     });
 
-    hub.on("hangUpVideo", function () { hangup(); });
-    hub.on("sendOffer", function (desc) { trace('Offer sent ' + desc); answer(JSON.parse(desc)); });
-    hub.on("sendIce", function (desc) { trace('Ice sent ' + desc); addIceCandidate(JSON.parse(desc)); });
-    hub.on("sendAnswer", function (desc) { trace('Answer sent ' + desc); getAnswer(JSON.parse(desc)); });
+    hub.on('hangUpVideo', function () {
+        hangup();
+    });
+    hub.on('sendOffer', function (desc) {
+        trace('Offer sent ' + desc);
+        answer(JSON.parse(desc));
+    });
+    hub.on('sendIce', function (desc) {
+        trace('Ice sent ' + desc);
+        addIceCandidate(JSON.parse(desc));
+    });
+    hub.on('sendAnswer', function (desc) {
+        trace('Answer sent ' + desc);
+        getAnswer(JSON.parse(desc));
+    });
 
     startHub();
 }
@@ -196,26 +237,39 @@ function startHub() {
         });
     }
 
-    $sendmessage.off('click').on('click', function () {
-        var $selectedUser = $('input[name="user"]:checked');
-        var conn = $selectedUser.val();
-        var conname = $selectedUser.attr('data-name') || '';
-        console.trace('conn = ' + conn + '/' + conname);
-        if (!conn || conn == "public" || !conname) {
-            hub.invoke("Send", $displayname.val(), $message.val());
-        } else {
-            hub.invoke("SendToUser", conname, conn, $displayname.val(), $message.val());
-        }
-        $message.val('').focus();
-    });
+    if (sendMessageButton) {
+        sendMessageButton.addEventListener('click', function () {
+            var selectedUser = document.querySelector('input[name="user"]:checked');
+            var conn = selectedUser ? selectedUser.value : '';
+            var conname = selectedUser ? (selectedUser.dataset.name || '') : '';
+            console.trace('conn = ' + conn + '/' + conname);
 
-    $message.off('keypress').on('keypress', function (e) {
-        if (e.which == 13) {
-            $sendmessage.click();
-        }
-    });
+            if (!conn || conn == 'public' || !conname) {
+                hub.invoke('Send', displayNameInput ? displayNameInput.value : '', messageInput ? messageInput.value : '');
+            } else {
+                hub.invoke('SendToUser', conname, conn, displayNameInput ? displayNameInput.value : '', messageInput ? messageInput.value : '');
+            }
 
-    $clearMessages.off('click').on('click', function () { $discussion.empty(); });
+            if (messageInput) {
+                messageInput.value = '';
+                messageInput.focus();
+            }
+        });
+    }
+
+    if (messageInput) {
+        messageInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                sendMessageButton.click();
+            }
+        });
+    }
+
+    if (clearMessagesButton) {
+        clearMessagesButton.addEventListener('click', function () {
+            discussionList.textContent = '';
+        });
+    }
 
     hub.onclose(function () {
         setConnectionStatus('Disconnected', 'disconnected');
