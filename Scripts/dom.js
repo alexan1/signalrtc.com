@@ -171,12 +171,15 @@ if (userInput) {
 
 if (videoToggleButton) {
     videoToggleButton.addEventListener('click', function () {
-        toggleElement(videoSection);
-        if (isElementVisible(localVideoEl)) {
+        var isActive = videoToggleButton.dataset.active === 'true';
+
+        if (!isActive) {
+            showElement(videoSection);
             setMicButtonState(false);
             startDev(1);
             connect();
         } else {
+            hideElement(videoSection);
             stopLocalTracks();
             setCameraButtonState(false);
             setMicButtonState(false);
