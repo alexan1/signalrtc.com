@@ -1,4 +1,4 @@
-const CACHE_NAME = 'signalrtc-v2';
+const CACHE_NAME = 'signalrtc-v3';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
