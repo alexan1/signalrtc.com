@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
-    <title>SignalRTC</title>
+    <title>SignalRTC: free video calls and chat in your browser</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Web application for video communication">
+    <meta name="description" content="Free video calls, voice calls and text chat right in your browser. See who is online, pick someone and call. No install needed.">
     <meta name="keywords" content="video,communication,chat,WebRTC,SignalR,Skype">
     <meta name="author" content="SignalRTC">
     <meta name="msvalidate.01" content="2AE989738C7AC2BB9E24406975F12F5C" />
@@ -15,6 +15,21 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#d9534f">
     <link rel="canonical" href="https://signalrtc.com/" />
+
+    <!-- Link previews (LinkedIn, WhatsApp, Facebook, X, Slack) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="SignalRTC">
+    <meta property="og:url" content="https://signalrtc.com/">
+    <meta property="og:title" content="SignalRTC: free video calls and chat in your browser">
+    <meta property="og:description" content="See who is online, pick someone and start a video or voice call. No install needed.">
+    <meta property="og:image" content="https://signalrtc.com/pics/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="SignalRTC: video calls and chat in your browser">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SignalRTC: free video calls and chat in your browser">
+    <meta name="twitter:description" content="See who is online, pick someone and start a video or voice call. No install needed.">
+    <meta name="twitter:image" content="https://signalrtc.com/pics/og-image.jpg">
 
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
     <link href="signalrtc.css" rel="stylesheet" />
@@ -167,12 +182,13 @@
                     <h4 class="modal-title caption">Welcome to SignalRTC</h4>
                 </div>
                 <div class="modal-body">
-                    <p>This is a browser-based video chat application powered by <a href="http://www.webrtc.org/" target="_blank">WebRTC</a> for live media and <a href="http://signalr.net/" target="_blank">SignalR</a> for text chat and signaling.</p>
-                    <p>For the best experience, use Chrome or Firefox and allow your browser to access your camera and microphone when prompted.</p>
-                    <p>After you press <strong>Start</strong>, you can see other visitors, send public or private messages, and choose someone for a direct audio or video call.</p>
-                    <p>You can switch on your webcam or microphone from the device panel, then use <strong>Call selected user</strong> to begin a conversation.</p>
-                    <p>Messages are not saved and the experience is still experimental, so feedback is always welcome.</p>
-                    <p>Please send your <a href="mailto:info@signalrtc.com?Subject=Feedback" target="_top">feedback</a>.</p>
+                    <p class="welcome-lead">Video calls and chat right in your browser. Nothing to install.</p>
+                    <ol class="welcome-steps">
+                        <li>Press <strong>Start</strong> and choose a name.</li>
+                        <li>Pick someone from <strong>Online now</strong>.</li>
+                        <li>Switch on your camera or microphone and press <strong>Call selected user</strong>.</li>
+                    </ol>
+                    <p class="welcome-note">Works best in Chrome or Firefox. Allow camera and microphone access when your browser asks. Messages are not saved. Built with <a href="https://webrtc.org/" target="_blank" rel="noopener">WebRTC</a> and <a href="https://dotnet.microsoft.com/apps/aspnet/signalr" target="_blank" rel="noopener">SignalR</a>. Ideas or problems? <a href="mailto:info@signalrtc.com?subject=Feedback">Send feedback</a>.</p>
                 </div>
                 <div class="modal-footer">
                     <div class="modal-footer__option form-check">

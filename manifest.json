@@ -1,7 +1,7 @@
 {
   "name": "SignalRTC",
   "short_name": "SignalRTC",
-  "description": "Web application for video communication",
+  "description": "Free video calls, voice calls and text chat in your browser",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

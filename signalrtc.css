@@ -555,3 +555,26 @@ a {
         min-height: 240px;
     }
 }
+
+/* Welcome dialog: short and scannable on phones */
+.welcome-lead {
+    margin: 0 0 14px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #1f2a44;
+}
+
+.welcome-steps {
+    margin: 0 0 16px;
+    padding-left: 22px;
+    display: grid;
+    gap: 8px;
+    color: #22313f;
+}
+
+.welcome-note {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #5f6f86;
+}
